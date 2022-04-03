@@ -1,30 +1,37 @@
-package top.banner.lib.lock.config;
+package top.banner.lib.config;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.Codec;
 import org.redisson.config.Config;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
-import top.banner.lib.lock.lock.RedisLockAspect;
+import top.banner.lib.expression.ExpressionResolver;
+import top.banner.lib.expression.KeyResolver;
+import top.banner.lib.idempotent.IdempotentAspect;
+import top.banner.lib.lock.RedisLockAspect;
 
 import javax.annotation.Resource;
 
 @Configuration
-@EnableConfigurationProperties(RedisLockProperties.class)
-public class LockConfiguration {
+@EnableConfigurationProperties(DefaultRedissonProperties.class)
+@AutoConfigureAfter(RedisAutoConfiguration.class)
+public class DefaultRedissonConfiguration {
 
     @Resource
-    private RedisLockProperties properties;
+    private DefaultRedissonProperties properties;
 
     /**
      * redissonClient
      */
-    @Bean(destroyMethod = "shutdown")
-    public RedissonClient redisson() throws Exception {
+    @Bean(name = "defaultRedisson", destroyMethod = "shutdown")
+    public RedissonClient defaultRedisson() throws Exception {
         Config config = new Config();
 
         config.useSingleServer().setAddress("redis://" + properties.getHost() + ":" + properties.getPort())
@@ -52,5 +59,26 @@ public class LockConfiguration {
     @Bean
     public RedisLockAspect redisLockAspect() {
         return new RedisLockAspect();
+    }
+
+    /**
+     * 切面 拦截处理所有 @Idempotent
+     *
+     * @return Aspect
+     */
+    @Bean
+    public IdempotentAspect idempotentAspect() {
+        return new IdempotentAspect();
+    }
+
+    /**
+     * key 解析器
+     *
+     * @return KeyResolver
+     */
+    @Bean(name = "idempotentKeyResolver")
+    @ConditionalOnMissingBean(KeyResolver.class)
+    public KeyResolver keyResolver() {
+        return new ExpressionResolver();
     }
 }

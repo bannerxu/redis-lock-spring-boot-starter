@@ -1,9 +1,9 @@
-package top.banner.lib.lock.config;
+package top.banner.lib.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "spring.redis")
-public class RedisLockProperties {
+public class DefaultRedissonProperties {
 
 
     private String host = "127.0.0.1";

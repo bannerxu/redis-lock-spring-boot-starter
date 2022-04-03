@@ -1,10 +1,10 @@
-package top.banner.lib.lock.lock;
+package top.banner.lib.lock;
 
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 使用redis进行分布式锁
+ * 并发锁
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
