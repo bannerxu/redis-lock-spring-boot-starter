@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.bannerxu</groupId>
     <artifactId>redis-lock-spring-boot-starter</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.2</version>
     <!--    <version>0.0.1-SNAPSHOT</version>-->
     <name>redis-lock-spring-boot-starter</name>
     <description>redis-lock-spring-boot-starter</description>
