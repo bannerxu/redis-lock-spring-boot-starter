@@ -1,5 +1,16 @@
 # redis-lock-spring-boot-starter
 
+## 导入依赖
+
+```xml
+
+<dependency>
+    <groupId>io.github.bannerxu</groupId>
+    <artifactId>redis-lock-spring-boot-starter</artifactId>
+    <version>last-version</version>
+</dependency>
+```
+
 支持以 SpEL表达式的方式设置key。
 
 - ## [分布式锁 RedisLock](src/main/java/top/banner/lib/lock/RedisLock.java)
@@ -39,9 +50,23 @@ public class RedisLockApplicationTests() {
                 }
             });
         }
-        testService.awaitAfterShutdown(pool);
+        awaitAfterShutdown(pool);
 
         log.info("耗时：{}", System.currentTimeMillis() - l);
+    }
+
+    public void awaitAfterShutdown(ExecutorService threadPool) {
+
+        threadPool.shutdown();
+        try {
+            if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) {
+                threadPool.shutdownNow();
+            }
+        } catch (InterruptedException ex) {
+            threadPool.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+
     }
 }
 ```
